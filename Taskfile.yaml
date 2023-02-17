@@ -1,0 +1,14 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+includes:
+  nix: ./tasks/Nix.Taskfile.yaml
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"

@@ -1,0 +1,44 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars: 
+  # NOTE: you can pickup a commit from https://status.nixos.org/
+  # NIXPKGS_URL: https://github.com/NixOS/nixpkgs/archive/2fb7d749c084890192b2cd08ba264e5e4a14df1b.tar.gz # nixos-2.11
+  NIXPKGS_URL: https://github.com/NixOS/nixpkgs/archive/28319deb5ab05458d9cd5c7d99e1a24ec2e8fc4b.tag.gz # nixos-unstable
+  
+
+tasks:
+  # NOTE: otherwise have a look at https://search.nixos.org/packages
+  search:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - nix-env -qaP {{.PACKAGES}}
+    vars:
+      PACKAGES: '{{.PACKAGES | default "git"}}'
+
+  hello:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - echo "Hello world"
+
+  shell:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - nix-shell {{.PURE}} -p {{.PACKAGES}} -I nixpkgs={{.NIXPKGS_URL}}
+    vars:
+      PACKAGES: '{{.PACKAGES | default "git"}}'
+      PURE: '--pure'
+
+  direnv-init:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - |
+        echo "watch_file shell.nix" > .envrc && \
+          echo "use nix" > .envrc && \
+          && direnv allow
+  
+  direnv-reload:
+    dir: '{{.USER_WORKING_DIR}}'
+    cmds:
+      - direnv allow && direnv reload
